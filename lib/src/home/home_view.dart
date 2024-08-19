@@ -11,32 +11,30 @@ class HomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    controller.init();
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home'),
       ),
       // render list gallery here
-      body: ListView.builder(
-        restorationId: 'homeView',
-        itemCount: controller.choesin.length,
-        itemBuilder: (BuildContext context, int index) {
-          final item = controller.choesin[index];
-
-          return ListTile(
-            title: Text(item.title),
-            leading: CircleAvatar(
-              foregroundImage: AssetImage(item.thumbnailUrl),
-            ),
-            onTap: () {
-              
+      body: Column(
+        children: [
+          ListView.builder(
+            restorationId: 'homeView.choesin',
+            itemCount: controller.choesin.length,
+            itemBuilder: (BuildContext context, int index) {
+              final item = controller.choesin[index];
+              return ListTile(
+                title: Text(item.title),
+                // thumbnail on box
+                leading: Image.network(item.thumbnailUrl),
+                onTap: () {
+                  
+                },
+              );
             },
-          );
-        },
+          ),
+        ],
       ),
-
-
     );
   }
 }

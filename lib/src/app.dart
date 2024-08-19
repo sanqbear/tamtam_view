@@ -12,14 +12,16 @@ class MyApp extends StatelessWidget {
   const MyApp({
     super.key,
     required this.settingsController,
+    required this.homeController
   });
 
   final SettingsController settingsController;
+  final HomeController homeController;
 
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: settingsController,
+      listenable: Listenable.merge([settingsController, homeController]),
       builder: (BuildContext context, Widget? child) {
         return MaterialApp(
           restorationScopeId: 'app',
@@ -48,7 +50,7 @@ class MyApp extends StatelessWidget {
                     return const SampleItemDetailsView();
                   case HomeView.routeName:
                   default:
-                    return HomeView(controller: HomeController(settingsController.baseUrl));
+                    return HomeView(controller: homeController);
                 }
               },
             );

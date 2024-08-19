@@ -1,10 +1,11 @@
+import 'package:flutter/material.dart';
 import 'package:html/parser.dart';
 import 'package:http/http.dart' as http;
 
 
 import 'package:tamtam_view/src/models/gallery_item.dart';
 
-class HomeController {
+class HomeController extends ChangeNotifier {
   HomeController(this.homeUri);
 
   final String homeUri;
@@ -28,9 +29,11 @@ class HomeController {
         var rows = el.first.getElementsByClassName("post-row");
         if(rows.isNotEmpty) {
           for(var row in rows) {
-            var linkUrl = row.getElementsByTagName("a")[0].attributes["href"]?.trim() ?? "";
-            var thumbUrl = row.getElementsByTagName("img")[0].attributes["src"]?.trim() ?? "";
-            var title = row.getElementsByClassName("in-subject")[0].text.trim();
+            var rightEl = row.getElementsByClassName("pull-right");
+            if(rightEl.isNotEmpty) rightEl.first.remove();
+            String linkUrl = (row.getElementsByTagName("a").isNotEmpty) ? row.getElementsByTagName("a").first.attributes["href"]?.trim() ?? "" : "";
+            String thumbUrl = (row.getElementsByTagName("img").isNotEmpty) ? row.getElementsByTagName("img").first.attributes["src"]?.trim() ?? "" : "";
+            String title = (row.getElementsByClassName("in-subject").isNotEmpty) ? row.getElementsByClassName("in-subject").first.text.trim() : "";
             _choesin.add(GalleryItem(linkUrl: linkUrl, thumbnailUrl: thumbUrl, title: title));
           }
         }
@@ -39,9 +42,11 @@ class HomeController {
           var rows = el[1].getElementsByClassName("post-row");
           if(rows.isNotEmpty) {
             for(var row in rows) {
-              var linkUrl = row.getElementsByTagName("a")[0].attributes["href"]?.trim() ?? "";
-              var thumbUrl = row.getElementsByTagName("img")[0].attributes["src"]?.trim() ?? "";
-              var title = row.getElementsByClassName("in-subject")[0].text.trim();
+              var rightEl = row.getElementsByClassName("pull-right");
+            if(rightEl.isNotEmpty) rightEl.first.remove();
+              String linkUrl = (row.getElementsByTagName("a").isNotEmpty) ? row.getElementsByTagName("a").first.attributes["href"]?.trim() ?? "" : "";
+              String thumbUrl = (row.getElementsByTagName("img").isNotEmpty) ? row.getElementsByTagName("img").first.attributes["src"]?.trim() ?? "" : "";
+              String title = (row.getElementsByClassName("in-subject").isNotEmpty) ? row.getElementsByClassName("in-subject").first.text.trim() : "";
               _manhwa.add(GalleryItem(linkUrl: linkUrl, thumbnailUrl: thumbUrl, title: title));
             }
           }
@@ -53,15 +58,18 @@ class HomeController {
         var rows = el2.first.getElementsByClassName("post-row");
         if(rows.isNotEmpty) {
           for(var row in rows) {
-            row.getElementsByClassName("pull-right")[0].remove();
-            var linkUrl = row.getElementsByTagName("a")[0].attributes["href"]?.trim() ?? "";
-            var thumbUrl = row.getElementsByTagName("img")[0].attributes["src"]?.trim() ?? "";
-            var title = row.getElementsByTagName("a")[0].text.trim();
+            var rightEl = row.getElementsByClassName("pull-right");
+            if(rightEl.isNotEmpty) rightEl.first.remove();
+            String linkUrl = (row.getElementsByTagName("a").isNotEmpty) ? row.getElementsByTagName("a").first.attributes["href"]?.trim() ?? "" : "";
+            String thumbUrl = (row.getElementsByTagName("img").isNotEmpty) ? row.getElementsByTagName("img").first.attributes["src"]?.trim() ?? "" : "";
+            String title = (row.getElementsByTagName("a").isNotEmpty) ? row.getElementsByTagName("a").first.text.trim() : "";
             _jugan.add(GalleryItem(linkUrl: linkUrl, thumbnailUrl: thumbUrl, title: title));
           }
         }
       }
     }
+
+    notifyListeners();
   }
 
   Future<String> fetchHomepage() async {

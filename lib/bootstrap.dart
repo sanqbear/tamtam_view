@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:tamtam_view/src/home/home_controller.dart';
 import 'package:tamtam_view/src/utils/http_overrides_ext.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -20,6 +21,9 @@ void bootstrap() async {
   final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
   final settingsController = SettingsController(LocalStorageSettingsService(sharedPreferences));
   await settingsController.loadSettings();
+  final homeController = HomeController(settingsController.baseUrl);
+  await homeController.init();
+  
 
-  runApp(MyApp(settingsController: settingsController));
+  runApp(MyApp(settingsController: settingsController, homeController: homeController,));
 }
