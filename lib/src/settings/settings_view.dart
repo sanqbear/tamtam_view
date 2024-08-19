@@ -2,10 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'settings_controller.dart';
 
-/// Displays the various settings that can be customized by the user.
-///
-/// When a user changes a setting, the SettingsController is updated and
-/// Widgets that listen to the SettingsController are rebuilt.
 class SettingsView extends StatelessWidget {
   const SettingsView({super.key, required this.controller});
 
@@ -19,31 +15,94 @@ class SettingsView extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Settings'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        // Glue the SettingsController to the theme selection DropdownButton.
-        //
-        // When a user selects a theme from the dropdown list, the
-        // SettingsController is updated, which rebuilds the MaterialApp.
-        child: DropdownButton<ThemeMode>(
-          // Read the selected themeMode from the controller
-          value: controller.themeMode,
-          // Call the updateThemeMode method any time the user selects a theme.
-          onChanged: controller.updateThemeMode,
-          items: const [
-            DropdownMenuItem(
-              value: ThemeMode.system,
-              child: Text('System Theme'),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                DropdownButton<ThemeMode>(
+                  value: controller.themeMode,
+                  onChanged: controller.updateThemeMode,
+                  items: const [
+                    DropdownMenuItem(
+                      value: ThemeMode.system,
+                      child: Text('System Theme'),
+                    ),
+                    DropdownMenuItem(
+                      value: ThemeMode.light,
+                      child: Text('Light Theme'),
+                    ),
+                    DropdownMenuItem(
+                      value: ThemeMode.dark,
+                      child: Text('Dark Theme'),
+                    )
+                  ],
+                ),
+              ],
             ),
-            DropdownMenuItem(
-              value: ThemeMode.light,
-              child: Text('Light Theme'),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            // add refresh button widget here
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                BaseUrlTextField(baseUrl: controller.baseUrl),
+                ElevatedButton(
+                    onPressed: () => {},
+                    child: Tooltip(
+                      message:
+                          controller.isUrlOk ? 'URL is OK' : 'URL is not OK',
+                      child: controller.isUrlOk
+                          ? const Icon(Icons.check_circle)
+                          : const Icon(Icons.error),
+                    )),
+                ElevatedButton(
+                  onPressed: controller.checkUrlStatus,
+                  // use icon not text
+                  child: const Icon(Icons.refresh),
+                ),
+              ],
             ),
-            DropdownMenuItem(
-              value: ThemeMode.dark,
-              child: Text('Dark Theme'),
-            )
-          ],
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class BaseUrlTextField extends StatefulWidget {
+  const BaseUrlTextField({super.key, this.baseUrl});
+
+  final String? baseUrl;
+
+  @override
+  State<StatefulWidget> createState() => BaseUrlTextState();
+}
+
+class BaseUrlTextState extends State<BaseUrlTextField> {
+  final textController = TextEditingController();
+
+  @override
+  void dispose() {
+    textController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    textController.text = widget.baseUrl ?? '';
+    return Expanded(
+      child: TextField(
+        readOnly: true,
+        controller: textController,
+        decoration: const InputDecoration(
+          labelText: 'Base URL',
+          hintText: 'https://manatoki.net',
         ),
       ),
     );

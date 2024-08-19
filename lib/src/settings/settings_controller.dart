@@ -1,50 +1,88 @@
 import 'package:flutter/material.dart';
 
 import 'settings_service.dart';
+import 'package:http/http.dart';
 
-/// A class that many Widgets can interact with to read user settings, update
-/// user settings, or listen to user settings changes.
-///
-/// Controllers glue Data Services to Flutter Widgets. The SettingsController
-/// uses the SettingsService to store and retrieve user settings.
 class SettingsController with ChangeNotifier {
   SettingsController(this._settingsService);
 
-  // Make SettingsService a private variable so it is not used directly.
   final SettingsService _settingsService;
+  final String _sourceUrl = "https://manatoki.net";
 
-  // Make ThemeMode a private variable so it is not updated directly without
-  // also persisting the changes with the SettingsService.
+  late String _baseUrl;
   late ThemeMode _themeMode;
+  late bool _isUrlOk;
 
-  // Allow Widgets to read the user's preferred ThemeMode.
   ThemeMode get themeMode => _themeMode;
+  String get baseUrl => _baseUrl;
+  bool get isUrlOk => _isUrlOk;
 
-  /// Load the user's settings from the SettingsService. It may load from a
-  /// local database or the internet. The controller only knows it can load the
-  /// settings from the service.
   Future<void> loadSettings() async {
     _themeMode = await _settingsService.themeMode();
-
-    // Important! Inform listeners a change has occurred.
+    _baseUrl = await _settingsService.baseUrl();
+    _isUrlOk = await checkUrlStatus();
     notifyListeners();
+  }
+
+  Future<bool> checkUrlStatus() async {
+    bool isOk = false;
+    if (baseUrl.isNotEmpty) {
+      isOk = await isUrlResponseOk(baseUrl);
+      if(isOk) return Future.value(isOk);
+    }
+
+    Request newReq = Request("GET", Uri.parse(_sourceUrl))..followRedirects = false;
+    newReq.headers['user-agent'] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36";
+    Client newClient = Client();
+    var res = await newClient.send(newReq);
+    if(res.statusCode == 302) {
+      var location = res.headers['location'];
+      if(location != null && location.isNotEmpty == true) {
+        await updateBaseUrl(location);
+        isOk = await isUrlResponseOk(location);
+        return Future.value(isOk);
+      }
+    }
+    return Future.value(false);
+  }
+
+  Future<bool> isUrlResponseOk(String? url) async {
+    if (url == null) return false;
+    if (url.isEmpty) return false;
+
+    Request req = Request("GET", Uri.parse(url))..followRedirects = false;
+    req.headers['user-agent'] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36";
+    try {
+      Client client = Client();
+      var response = await client.send(req);
+      return Future.value(response.statusCode == 200);
+    } catch (e) {
+      return Future.value(false);
+    }
   }
 
   /// Update and persist the ThemeMode based on the user's selection.
   Future<void> updateThemeMode(ThemeMode? newThemeMode) async {
     if (newThemeMode == null) return;
 
-    // Do not perform any work if new and old ThemeMode are identical
     if (newThemeMode == _themeMode) return;
 
-    // Otherwise, store the new ThemeMode in memory
     _themeMode = newThemeMode;
 
-    // Important! Inform listeners a change has occurred.
     notifyListeners();
 
-    // Persist the changes to a local database or the internet using the
-    // SettingService.
     await _settingsService.updateThemeMode(newThemeMode);
+  }
+
+  Future<void> updateBaseUrl(String? url) async {
+    if (url == null) return;
+    if (url.isEmpty) return;
+    if (url == _baseUrl) return;
+
+    _baseUrl = url;
+
+    notifyListeners();
+
+    await _settingsService.updateBaseUrl(url);
   }
 }
