@@ -20,6 +20,13 @@ class HomeController extends ChangeNotifier {
 
   Future<void> init() async {
     clear();
+    await loadGalleries();
+    notifyListeners();
+  }
+
+
+  Future<void> loadGalleries() async {
+    clear();
 
     var responseBody = await fetchHomepage();
     if(responseBody.isNotEmpty) {
@@ -53,13 +60,15 @@ class HomeController extends ChangeNotifier {
         }
       }
 
-      var el2 = document.getElementsByClassName("miso-post-list");
-      if(el2.isNotEmpty) {
-        var rows = el2.first.getElementsByClassName("post-row");
+      var el2 = document.querySelector(".tab-content .miso-post-list");
+      if(el2 != null) {
+        var rows = el2.getElementsByClassName("post-row");
         if(rows.isNotEmpty) {
           for(var row in rows) {
-            var rightEl = row.getElementsByClassName("pull-right");
-            if(rightEl.isNotEmpty) rightEl.first.remove();
+            var rightEl = row.querySelector(".pull-right");
+            var rankEl = row.querySelector(".rank-icon");
+            if(rightEl != null) rightEl.remove();
+            if(rankEl != null) rankEl.remove();
             String linkUrl = (row.getElementsByTagName("a").isNotEmpty) ? row.getElementsByTagName("a").first.attributes["href"]?.trim() ?? "" : "";
             String thumbUrl = (row.getElementsByTagName("img").isNotEmpty) ? row.getElementsByTagName("img").first.attributes["src"]?.trim() ?? "" : "";
             String title = (row.getElementsByTagName("a").isNotEmpty) ? row.getElementsByTagName("a").first.text.trim() : "";
@@ -71,6 +80,7 @@ class HomeController extends ChangeNotifier {
 
     notifyListeners();
   }
+
 
   Future<String> fetchHomepage() async {
     if(homeUri.isEmpty) return "";

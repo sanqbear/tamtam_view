@@ -21,6 +21,12 @@ class LocalStorageSettingsService extends SettingsService {
   }
 
   @override
+  Future<String> locale() {
+    String? locale = _sharedPreferences.getString("$_appStoragePrefix" "LOCALE");
+    return Future.value(locale ?? "en");
+  }
+
+  @override
   Future<void> updateThemeMode(ThemeMode theme) {
     return _sharedPreferences.setInt("$_appStoragePrefix" "THEME_MODE", theme.index);
   }
@@ -28,5 +34,10 @@ class LocalStorageSettingsService extends SettingsService {
   @override
   Future<void> updateBaseUrl(String url) {
     return _sharedPreferences.setString("$_appStoragePrefix" "BASE_URL", url);
+  }
+
+  @override
+  Future<void> updateLocale(String locale) {
+    return _sharedPreferences.setString("$_appStoragePrefix" "LOCALE", locale);
   }
 }

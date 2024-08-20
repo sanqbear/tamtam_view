@@ -1,18 +1,18 @@
 {
-  "@@locale": "en",
+  "@@locale": "ja",
   "appTitle": "Tamtam View",
-  "theme": "Theme",
-  "themeSystem": "System Theme",
-  "themeLight": "Light Theme",
-  "themeDark": "Dark Theme",
-  "language": "Language",
-  "ko": "Korean",
-  "ja": "Japanese",
-  "en": "English",
-  "serviceUrl": "Service URL",
-  "refresh": "Refresh",
-  "msg_ThisURLIsCurrentlyReachable": "This URL is currently reachable.",
-  "msg_ThisURLIsCurrentlyUnreachable": "This URL is currently unreachable.",
+  "theme": "テーマ",
+  "themeSystem": "システムテーマ",
+  "themeLight": "ライトテーマ",
+  "themeDark": "ダークテーマ",
+  "language": "言語",
+  "ko": "韓国語",
+  "ja": "日本語",
+  "en": "英語",
+  "serviceUrl": "サービスURL",
+  "refresh": "リフレッシュ",
+  "msg_ThisURLIsCurrentlyReachable": "現在、このURLは到達可能です。",
+  "msg_ThisURLIsCurrentlyUnreachable": "現在、このURLは到達不可能です。",
   "@appTitle": {
     "description": "The title of the application"
   },
@@ -28,7 +28,7 @@
   "@themeDark": {
     "description": "The title of the dark theme"
   },
-  "@language": {
+  "@Language": {
     "description": "The title of the language"
   },
   "@ko": {

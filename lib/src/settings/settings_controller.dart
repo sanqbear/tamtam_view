@@ -12,15 +12,18 @@ class SettingsController with ChangeNotifier {
   late String _baseUrl;
   late ThemeMode _themeMode;
   late bool _isUrlOk;
+  late String _locale;
 
   ThemeMode get themeMode => _themeMode;
   String get baseUrl => _baseUrl;
   bool get isUrlOk => _isUrlOk;
+  String get locale => _locale;
 
   Future<void> loadSettings() async {
     _themeMode = await _settingsService.themeMode();
     _baseUrl = await _settingsService.baseUrl();
     _isUrlOk = await checkUrlStatus();
+    _locale = await _settingsService.locale();
     notifyListeners();
   }
 
@@ -84,5 +87,17 @@ class SettingsController with ChangeNotifier {
     notifyListeners();
 
     await _settingsService.updateBaseUrl(url);
+  }
+
+  Future<void> updateLocale(String? locale) async {
+    if (locale == null) return;
+    if (locale.isEmpty) return;
+    if (locale == _locale) return;
+
+    _locale = locale;
+
+    notifyListeners();
+
+    await _settingsService.updateLocale(locale);
   }
 }
